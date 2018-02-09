@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.8.2)
 
+if(POLICY CMP0022)
+	cmake_policy(SET CMP0022 NEW)
+endif()
+
 # Set default build type to Release if empty.
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING
 	"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
