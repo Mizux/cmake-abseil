@@ -44,6 +44,20 @@ cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON
 cmake --build build
 ```
 
+# Docker testing
+To test CMake Install rules and build, there is a Makefile in cmake folder using
+docker to test.
+
+For example to test the Cmake project on ubuntu:
+```sh
+make -f cmake/Makefile test_install_ubuntu
+```
+
+note: to get help you can use
+```sh
+make -f cmake/Makefile help
+```
+
 # Contributing
 The [CONTRIBUTING.md](./CONTRIBUTING.md) file contains instructions on how to
 file the Contributor License Agreement before sending any pull requests (PRs).
