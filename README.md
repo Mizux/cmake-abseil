@@ -82,12 +82,6 @@ make[2]: *** [abseil-build/absl/base/CMakeFiles/absl_base.dir/build.make:231: ab
 make[1]: *** [CMakeFiles/Makefile2:1544: abseil-build/absl/base/CMakeFiles/absl_base.dir/all] Error 2
 ```
 
-## Windows Visual Studio Issue
-
-While Foo depends on abseil as private, CMake still complains to not find it in the export rules.<br>
-i.e. you can't create library which depends on abseil (even in static internaly).<br>
-cf. https://ci.appveyor.com/project/Mizux/cmake-abseil/build/2/job/g0ir3icxywa9jhkk#L188
-
 # Contributing
 The [CONTRIBUTING.md](./CONTRIBUTING.md) file contains instructions on how to
 file the Contributor License Agreement before sending any pull requests (PRs).
