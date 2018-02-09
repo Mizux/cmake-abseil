@@ -1,13 +1,17 @@
 help:
 	@echo "usage:"
-	@echo "make docker: generate docker images"
-	@echo "make configure: cmake configure"
-	@echo "make build: cmake build"
-	@echo "make test: run unit tests"
-	@echo "make install: cmake install"
-	@echo "make test_install: configure a sample project against an installation"
-	@echo "make clean: call cmake \"make clean\""
-	@echo "make distclean: clean and also remove all docker images"
+	@echo "make docker: generate docker devel images"
+	@echo "make configure: run cmake using the devel image container"
+	@echo "make build: execute the cmake target all using the devel image container"
+	@echo "make test: execute the cmake target test using the devel image container"
+	@echo "make install: execute the cmake target install using the devel image container, then create an install image with it"
+	@echo "make test_install: configure a sample project against it using the install image container"
+	@echo "make clean: execute the cmake target clean"
+	@echo "make distclean: execute clean and also remove all docker images"
+	@echo ""
+	@echo "note: Currently test are done on alpine and ubuntu, you can add \"_<distro>\"" \
+" at end of the previous targets to run only test on this distro (e.g make test_install_alpine)."
+	@echo "note: All generated code will be located in the cache/ folder, use distclean to remove it"
 
 # Need to add cmd_distro to PHONY otherwise target are ignored since they don't
 # contain recipe (using FORCE don't work here)
