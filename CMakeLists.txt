@@ -13,12 +13,9 @@ project(meta VERSION 1.0 LANGUAGES NONE)
 include(CTest)
 include(GNUInstallDirs)
 
-if(UNIX)
-  option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
-else()
-	# only support for static build on Windows.
- set(BUILD_SHARED_LIBS OFF)
-endif()
+# building in static will require to export abseil also wich doesn't provide export rule...
+# cf https://gitlab.kitware.com/cmake/cmake/issues/17357
+option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
 
 # Build Dependencies
 add_subdirectory(cmake)
