@@ -1,29 +1,12 @@
-language: cpp
-
-matrix:
-  include:
-    - os: linux
-      dist: xenial
-      compiler: gcc
-
-    - os: linux
-      dist: xenial
-      compiler: clang
-
-    - os: osx
-      osx_image: xcode10.1
-      compiler: clang
-
-
-
-before_install:
-  - eval "${MATRIX_EVAL}"
+language: minimal
+dist: xenial
 
 install: true
 
 script:
-  - cmake --version
-  - cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON
-  - cmake --build build --target all
-  - cmake --build build --target install
-#  - cmake --build build --target test
+  - cd ci && make docker_ubuntu
+  - cd ci && make configure_ubuntu
+  - cd ci && make build_ubuntu
+  - cd ci && make test_ubuntu
+  - cd ci && make install_ubuntu
+  - cd ci && make test_install_ubuntu
