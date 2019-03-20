@@ -1,8 +1,10 @@
 #include <iostream>
-#include <absl/base/config.h>
+#include "absl/strings/substitute.h"
 
 int main(int argc, char** argv) {
 	std::cout << "hello" << std::endl;
-	return 0;
+  for (int i = 0; i < argc; ++i) {
+    std::cout << absl::Substitute("Arg $0: $1\n", i, argv[i]);
+  }	return 0;
 }
 

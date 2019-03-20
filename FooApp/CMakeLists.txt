@@ -2,10 +2,10 @@ project(FooApp VERSION 1.0.0 LANGUAGES CXX)
 
 file(GLOB _SRCS "src/*.[hc]pp")
 
-if(TARGET absl::base)
-	message(STATUS "Found Target: absl::base")
+if(TARGET absl::strings)
+	message(STATUS "Found Target: absl::strings")
 else()
-	message(FATAL_ERROR "Target absl::base not found")
+	message(FATAL_ERROR "Target absl::strings not found")
 endif()
 
 add_executable(${PROJECT_NAME} "")
@@ -16,7 +16,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED ON
   VERSION ${PROJECT_VERSION})
-target_link_libraries(${PROJECT_NAME} PUBLIC absl::base absl::time)
+target_link_libraries(${PROJECT_NAME} PRIVATE absl::strings)
 add_executable(CMakeAbseil::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Test
