@@ -11,7 +11,6 @@ This project should run on Linux, Mac and Windows.
 This CMake project is composed of one executable (FooApp) and one library (Foo)
 with the following dependencies:  
 ```
-CCTZ:
 Abseil: CCTZ
 Foo: Abseil
 FooApp: Abseil
@@ -23,14 +22,15 @@ Thus the project layout is as follow:
  CMakeLists.txt // meta CMake doing the orchestration.
  cmake
  ├── CMakeLists.txt
+ ├── CMakeAbseilConfig.cmake.in
  ├── abseil.CMakeLists.txt
- ├── cctz.CMakeLists.txt
- patches
- ├── abseil.patch
- ├── cctz.patch
  Foo
  ├── CMakeLists.txt
- ├── main.cpp
+ ├── include
+ │   └── foo
+ │       └── Foo.hpp
+ ├── src
+ │   └── Foo.cpp
  FooApp
  ├── CMakeLists.txt
  └── src
@@ -45,42 +45,20 @@ cmake --build build
 ```
 
 # Docker testing
-To test CMake Install rules and build, there is a Makefile in cmake folder using
-docker to test.
+To test CMake Install rules and build, there is a Makefile in ci folder using
+docker containers to test.
 
-For example to test the Cmake project on ubuntu:
+For example to test the CMake project on ubuntu:
 ```sh
-make -f cmake/Makefile test_install_ubuntu
+make -f ci/Makefile test_install_ubuntu
 ```
 
 note: to get help you can use
 ```sh
-make -f cmake/Makefile help
+make -f ci/Makefile help
 ```
 
 # Known issues
-
-## Alpine Issue
-Abseil seems not working on alpine:
-```sh
-make -f cmake/Makefile build_alpine
-```
-
-you'll get the error
-```sh
-[ 28%] Building CXX object abseil-build/absl/base/CMakeFiles/absl_base.dir/internal/malloc_hook.cc.o
-In file included from /project/cache/alpine/abseil-src/absl/base/internal/malloc_hook.cc:542:0:
-/project/cache/alpine/abseil-src/absl/base/internal/malloc_hook_mmap_linux.inc: In function 'void* mmap(void*, size_t, int, int, int, off_t)':
-/project/cache/alpine/abseil-src/absl/base/internal/malloc_hook_mmap_linux.inc:160:18: error: redefinition of 'void* mmap(void*, size_t, int, int, int, off_t)'
- extern "C" void* mmap(void *start, size_t length, int prot, int flags,
-                  ^~~~
-In file included from /project/cache/alpine/abseil-src/absl/base/internal/malloc_hook.cc:23:0:
-/project/cache/alpine/abseil-src/absl/base/internal/malloc_hook_mmap_linux.inc:144:18: note: 'void* mmap(void*, size_t, int, int, int, off_t)' previously defined here
- extern "C" void* mmap64(void *start, size_t length, int prot, int flags,
-                  ^
-make[2]: *** [abseil-build/absl/base/CMakeFiles/absl_base.dir/build.make:231: abseil-build/absl/base/CMakeFiles/absl_base.dir/internal/malloc_hook.cc.o] Error 1
-make[1]: *** [CMakeFiles/Makefile2:1544: abseil-build/absl/base/CMakeFiles/absl_base.dir/all] Error 2
-```
 
 # Contributing
 The [CONTRIBUTING.md](./CONTRIBUTING.md) file contains instructions on how to
