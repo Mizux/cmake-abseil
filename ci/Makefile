@@ -7,7 +7,7 @@ $(info sha1: $(SHA1))
 .PHONY: help
 help:
 	@echo "use NOCACHE=1 to \"docker build --no-cache\""
-	@echo "<distro>: alpine, ubuntu-16.04, all"
+	@echo "<distro>: alpine (latest), xenial (16.04 LTS), ubuntu (latest), all"
 	@echo "usage:"
 	@echo "make docker: generate docker devel images"
 	@echo "make configure: run cmake using the devel image container"
@@ -49,83 +49,94 @@ DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/sample:/project -w /project
 # $@ target name
 
 # DOCKER
-.PHONY: docker docker_alpine docker_ubuntu
+.PHONY: docker docker_alpine docker_ubuntu docker_xenial
 docker: docker_alpine docker_ubuntu
 docker_alpine: cache/alpine/docker_devel.tar
 docker_ubuntu: cache/ubuntu/docker_devel.tar
-cache/%/docker_devel.tar: docker/%/Dockerfile docker/%/setup.sh
+docker_xenial: cache/xenial/docker_devel.tar
+cache/%/docker_devel.tar: docker/%/Dockerfile
 	mkdir -p cache/$*
 	@docker image rm -f ${IMAGE}_$*:devel 2>/dev/null
 	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:devel -f $< docker/$*
 	docker save ${IMAGE}_$*:devel -o $@
 
 # DOCKER BASH (debug)
-.PHONY: bash_alpine bash_ubuntu
+.PHONY: bash_alpine bash_ubuntu bash_xenial
 bash_alpine: cache/alpine/docker_devel.tar
 	${DOCKER_DEVEL_CMD} ${IMAGE}_alpine:devel /bin/sh
 bash_ubuntu: cache/ubuntu/docker_devel.tar
 	${DOCKER_DEVEL_CMD} ${IMAGE}_ubuntu:devel /bin/bash
+bash_xenial: cache/xenial/docker_devel.tar
+	${DOCKER_DEVEL_CMD} ${IMAGE}_xenial:devel /bin/bash
 
 # CONFIGURE
-.PHONY: configure configure_alpine configure_ubuntu
-configure: configure_alpine configure_ubuntu
+.PHONY: configure configure_alpine configure_ubuntu configure_xenial
+configure: configure_alpine configure_ubuntu configure_xenial
 configure_alpine: cache/alpine/configure.log
 configure_ubuntu: cache/ubuntu/configure.log
+configure_xenial: cache/xenial/configure.log
 cache/%/configure.log: cache/%/docker_devel.tar \
 	../CMakeLists.txt ../*/CMakeLists.txt \
 	../cmake/*.CMakeLists.txt ../cmake/*Config.cmake.in
 	@docker load -i $<
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake -version && cmake -H. -Bci/cache/$*"
+		"cmake -version && cmake -H. -Bci/cache/$*/build"
 	@date > $@
 
 # BUILD
-.PHONY: build build_alpine build_ubuntu
-build: build_alpine build_ubuntu
+.PHONY: build build_alpine build_ubuntu build_xenial
+build: build_alpine build_ubuntu build_xenial
 build_alpine: cache/alpine/build.log
 build_ubuntu: cache/ubuntu/build.log
+build_xenial: cache/xenial/build.log
 cache/%/build.log: cache/%/configure.log ../Foo ../FooApp
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake --build ci/cache/$* --target all"
+		"cmake --build ci/cache/$*/build --target all"
 	@date > $@
 
 # TEST
-.PHONY: test test_alpine test_ubuntu
-test: test_alpine test_ubuntu
+.PHONY: test test_alpine test_ubuntu test_xenial
+test: test_alpine test_ubuntu test_xenial
 test_alpine: cache/alpine/test.log
 test_ubuntu: cache/ubuntu/test.log
+test_xenial: cache/xenial/test.log
 cache/%/test.log: cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake --build ci/cache/$* --target test -- CTEST_OUTPUT_ON_FAILURE=1"
+		"cmake --build ci/cache/$*/build --target test -- CTEST_OUTPUT_ON_FAILURE=1"
 	@date > $@
 
 # INSTALL
-.PHONY: install install_alpine install_ubuntu
-install: install_alpine install_ubuntu
+.PHONY: install install_alpine install_ubuntu install_xenial
+install: install_alpine install_ubuntu install_xenial
 install_alpine: cache/alpine/install.log
 install_ubuntu: cache/ubuntu/install.log
+install_xenial: cache/xenial/install.log
 cache/%/install.log: docker/%/InstallDockerfile cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake --build ci/cache/$* --target install -- DESTDIR=install"
+		"cmake --build ci/cache/$*/build --target install -- DESTDIR=../install"
 	@docker image rm -f ${IMAGE}_$*:install 2>/dev/null
-	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:install -f $< .
+	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:install -f $< cache/$*
 	docker save ${IMAGE}_$*:install -o cache/$*/docker_install.tar
 	@date > $@
 
 # DOCKER BASH INSTALL
-.PHONY: bash_install_alpine bash_install_ubuntu
+.PHONY: bash_install_alpine bash_install_ubuntu bash_install_xenial
 bash_install_alpine: cache/alpine/install.log
 	@docker load -i cache/alpine/docker_install.tar
 	${DOCKER_INSTALL_CMD} ${IMAGE}_alpine:install /bin/sh
 bash_install_ubuntu: cache/ubuntu/install.log
 	@docker load -i cache/ubuntu/docker_install.tar
 	${DOCKER_INSTALL_CMD} ${IMAGE}_ubuntu:install /bin/bash
+bash_install_xenial: cache/xenial/install.log
+	@docker load -i cache/xenial/docker_install.tar
+	${DOCKER_INSTALL_CMD} ${IMAGE}_xenial:install /bin/bash
 
 # TEST INSTALL of ProjectConfigs.cmake
-.PHONY: test_install test_install_alpine bash_isntall_ubuntu
-test_install: test_install_alpine test_install_ubuntu
+.PHONY: test_install test_install_alpine test_install_ubuntu test_install_xenial
+test_install: test_install_alpine test_install_ubuntu test_install_xenial
 test_install_alpine: cache/alpine/test_install.log
 test_install_ubuntu: cache/ubuntu/test_install.log
+test_install_xenial: cache/xenial/test_install.log
 cache/%/test_install.log: cache/%/install.log sample
 	@docker load -i cache/$*/docker_install.tar
 	${DOCKER_INSTALL_CMD} ${IMAGE}_$*:install /bin/sh -c \
@@ -143,7 +154,7 @@ clean_ubuntu: clean-ubuntu
 clean-%:: cache/%/docker_devel.tar
 	@docker load -i $<
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake --build ci/cache/$* --target clean"
+		"cmake --build ci/cache/$*/build --target clean"
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"rm -rf ci/cache/$*/install"
 	@rm -f cache/$*/test.log

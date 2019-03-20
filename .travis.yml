@@ -5,6 +5,7 @@ matrix:
   include:
     - env: DISTRO=alpine
     - env: DISTRO=ubuntu
+    - env: DISTRO=xenial
 
 install: true
 
