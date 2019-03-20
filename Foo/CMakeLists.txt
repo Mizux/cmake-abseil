@@ -18,6 +18,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 #target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	PUBLIC_HEADER ${_HDRS}
+  CXX_STANDARD 11
+  CXX_STANDARD_REQUIRED ON
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION_MAJOR})
 target_link_libraries(${PROJECT_NAME} PUBLIC absl::base absl::time)
