@@ -1,29 +1,48 @@
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+$(info branch: $(BRANCH))
+SHA1 := $(shell git rev-parse --verify HEAD)
+$(info sha1: $(SHA1))
+
+# General commands
+.PHONY: help
 help:
+	@echo "use NOCACHE=1 to \"docker build --no-cache\""
+	@echo "<distro>: alpine, ubuntu-16.04, all"
 	@echo "usage:"
 	@echo "make docker: generate docker devel images"
 	@echo "make configure: run cmake using the devel image container"
 	@echo "make build: execute the cmake target all using the devel image container"
 	@echo "make test: execute the cmake target test using the devel image container"
+	@echo
 	@echo "make install: execute the cmake target install using the devel image container, then create an install image with it"
 	@echo "make test_install: configure a sample project against it using the install image container"
 	@echo "make clean: execute the cmake target clean"
 	@echo "make distclean: execute clean and also remove all docker images"
 	@echo ""
 	@echo "note: Currently test are done on alpine and ubuntu, you can add \"_<distro>\"" \
-" at end of the previous targets to run only test on this distro (e.g make test_install_alpine)."
+ " at end of the previous targets to run only test on this distro (e.g make test_install_alpine)."
 	@echo "note: All generated code will be located in the cache/ folder, use distclean to remove it"
 
-# Need to add cmd_distro to PHONY otherwise target are ignored since they don't
-# contain recipe (using FORCE don't work here)
-.PHONY: help all
+# Need to add cmd_distro to PHONY otherwise target are ignored since they do not
+# contain recipe (using FORCE do not work here)
+.PHONY: all
 all: build
 
 IMAGE := cmake_abseil
-#UID := $(shell id -u)
-#GID := $(shell id -g)
-#DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}:/project -w /project --user ${UID}:${GID}
-DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}:/project -w /project
-DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/cmake/sample:/project -w /project
+
+ifdef NOCACHE
+DOCKER_BUILD_CMD := docker build --no-cache
+else
+DOCKER_BUILD_CMD := docker build
+endif
+
+# Use host user id instead of root
+UID := $(shell id -u)
+GID := $(shell id -g)
+DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}/..:/project -w /project --user ${UID}:${GID}
+
+#DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}:/project -w /project
+DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/sample:/project -w /project
 
 # $* stem
 # $< first prerequist
@@ -34,13 +53,13 @@ DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/cmake/sample:/project -w /pr
 docker: docker_alpine docker_ubuntu
 docker_alpine: cache/alpine/docker_devel.tar
 docker_ubuntu: cache/ubuntu/docker_devel.tar
-cache/%/docker_devel.tar: cmake/docker/%/Dockerfile cmake/docker/%/setup.sh
+cache/%/docker_devel.tar: docker/%/Dockerfile docker/%/setup.sh
 	mkdir -p cache/$*
 	@docker image rm -f ${IMAGE}_$*:devel 2>/dev/null
-	docker build --no-cache -t ${IMAGE}_$*:devel -f $< cmake/docker/$*
+	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:devel -f $< docker/$*
 	docker save ${IMAGE}_$*:devel -o $@
 
-# DOCKER BASH
+# DOCKER BASH (debug)
 .PHONY: bash_alpine bash_ubuntu
 bash_alpine: cache/alpine/docker_devel.tar
 	${DOCKER_DEVEL_CMD} ${IMAGE}_alpine:devel /bin/sh
@@ -53,8 +72,8 @@ configure: configure_alpine configure_ubuntu
 configure_alpine: cache/alpine/configure.log
 configure_ubuntu: cache/ubuntu/configure.log
 cache/%/configure.log: cache/%/docker_devel.tar \
-	CMakeLists.txt */CMakeLists.txt \
-	cmake/*.CMakeLists.txt cmake/*Config.cmake.in
+	../CMakeLists.txt ../*/CMakeLists.txt \
+	../cmake/*.CMakeLists.txt ../cmake/*Config.cmake.in
 	@docker load -i $<
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake -H. -Bcache/$*"
@@ -65,7 +84,7 @@ cache/%/configure.log: cache/%/docker_devel.tar \
 build: build_alpine build_ubuntu
 build_alpine: cache/alpine/build.log
 build_ubuntu: cache/ubuntu/build.log
-cache/%/build.log: cache/%/configure.log Foo FooApp
+cache/%/build.log: cache/%/configure.log ../Foo ../FooApp
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake --build cache/$* --target all"
 	@date > $@
