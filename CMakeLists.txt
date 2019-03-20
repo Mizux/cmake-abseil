@@ -1,17 +1,17 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.5)
 
 if(POLICY CMP0022)
 	cmake_policy(SET CMP0022 NEW)
 endif()
 
-# Set default build type to Release if empty.
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-	"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
-
-project(meta VERSION 1.0 LANGUAGES NONE)
+project(CMakeAbseil VERSION 1.0 LANGUAGES NONE)
 
 include(CTest)
 include(GNUInstallDirs)
+
+# Set default build type to Release if empty.
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+	"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
 
 # building in static will require to export abseil also wich doesn't provide export rule...
 # cf https://gitlab.kitware.com/cmake/cmake/issues/17357
@@ -24,22 +24,23 @@ add_subdirectory(Foo)
 add_subdirectory(FooApp)
 
 # Install
-install(EXPORT CMakeAbseilTargets
-	NAMESPACE CMakeAbseil::
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CMakeAbseil
-	COMPONENT Devel)
+install(EXPORT FooTargets
+	NAMESPACE ca::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
 include(CMakePackageConfigHelpers)
-configure_package_config_file(cmake/CMakeAbseilConfig.cmake.in
-	"${PROJECT_BINARY_DIR}/CMakeAbseilConfig.cmake"
+configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
+	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 	INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeAbseil"
 	NO_SET_AND_CHECK_MACRO
   NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 write_basic_package_version_file(
-	"${PROJECT_BINARY_DIR}/CMakeAbseilConfigVersion.cmake"
+	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
 	COMPATIBILITY SameMajorVersion)
 install(
 	FILES
-	"${PROJECT_BINARY_DIR}/CMakeAbseilConfig.cmake"
-	"${PROJECT_BINARY_DIR}/CMakeAbseilConfigVersion.cmake"
-	DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeAbseil"
-	COMPONENT Devel)
+	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+	DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
