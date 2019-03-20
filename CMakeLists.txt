@@ -25,7 +25,7 @@ add_subdirectory(FooApp)
 
 # Install
 install(EXPORT ${PROJECT_NAME}Targets
-	NAMESPACE ca::
+  NAMESPACE ${PROJECT_NAME}::
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 

@@ -104,11 +104,11 @@ cache/%/test.log: cache/%/build.log
 install: install_alpine install_ubuntu
 install_alpine: cache/alpine/install.log
 install_ubuntu: cache/ubuntu/install.log
-cache/%/install.log: cmake/docker/%/InstallDockerfile cache/%/build.log
+cache/%/install.log: docker/%/InstallDockerfile cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake --build ci/cache/$* --target install -- DESTDIR=install"
 	@docker image rm -f ${IMAGE}_$*:install 2>/dev/null
-	docker build --no-cache -t ${IMAGE}_$*:install -f $< .
+	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:install -f $< .
 	docker save ${IMAGE}_$*:install -o cache/$*/docker_install.tar
 	@date > $@
 
@@ -126,7 +126,7 @@ bash_install_ubuntu: cache/ubuntu/install.log
 test_install: test_install_alpine test_install_ubuntu
 test_install_alpine: cache/alpine/test_install.log
 test_install_ubuntu: cache/ubuntu/test_install.log
-cache/%/test_install.log: cache/%/install.log cmake/sample
+cache/%/test_install.log: cache/%/install.log sample
 	@docker load -i cache/$*/docker_install.tar
 	${DOCKER_INSTALL_CMD} ${IMAGE}_$*:install /bin/sh -c \
 		"cmake -H. -B/cache; \
