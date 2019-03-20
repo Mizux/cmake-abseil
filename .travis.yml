@@ -1,13 +1,18 @@
 language: minimal
 dist: xenial
 
+matrix:
+  include:
+    - env: DISTRO=alpine
+    - env: DISTRO=ubuntu
+
 install: true
 
 script:
   - cd ci
-  - make docker_ubuntu
-  - make configure_ubuntu
-  - make build_ubuntu
-  - make test_ubuntu
-  - make install_ubuntu
-  - make test_install_ubuntu
+  - make docker_${DISTRO}
+  - make configure_${DISTRO}
+  - make build_${DISTRO}
+  - make test_${DISTRO}
+  - make install_${DISTRO}
+  - make test_install_${DISTRO}
