@@ -16,7 +16,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED ON
   VERSION ${PROJECT_VERSION})
-target_link_libraries(${PROJECT_NAME} PRIVATE absl::strings)
+target_link_libraries(${PROJECT_NAME} PRIVATE CMakeAbseil::Foo absl::strings)
 add_executable(CMakeAbseil::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Test
