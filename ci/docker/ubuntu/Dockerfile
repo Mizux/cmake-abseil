@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:xenial
 LABEL maintainer="corentinl@google.com"
 
 ADD setup.sh .

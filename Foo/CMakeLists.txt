@@ -15,12 +15,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 	)
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+#target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	PUBLIC_HEADER ${_HDRS}
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION_MAJOR})
-target_link_libraries(${PROJECT_NAME} PRIVATE absl::base absl::time)
+target_link_libraries(${PROJECT_NAME} PUBLIC absl::base absl::time)
 add_library(CMakeAbseil::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Install
