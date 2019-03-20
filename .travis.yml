@@ -4,9 +4,10 @@ dist: xenial
 install: true
 
 script:
-  - cd ci && make docker_ubuntu
-  - cd ci && make configure_ubuntu
-  - cd ci && make build_ubuntu
-  - cd ci && make test_ubuntu
-  - cd ci && make install_ubuntu
-  - cd ci && make test_install_ubuntu
+  - cd ci
+  - make docker_ubuntu
+  - make configure_ubuntu
+  - make build_ubuntu
+  - make test_ubuntu
+  - make install_ubuntu
+  - make test_install_ubuntu
