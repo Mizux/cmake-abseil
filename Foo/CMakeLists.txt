@@ -20,7 +20,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	PUBLIC_HEADER ${_HDRS}
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION_MAJOR})
-target_link_libraries(${PROJECT_NAME} PRIVATE absl::base)
+target_link_libraries(${PROJECT_NAME} PRIVATE absl::base absl::time)
 add_library(CMakeAbseil::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Install

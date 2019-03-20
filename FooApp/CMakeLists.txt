@@ -13,7 +13,7 @@ target_sources(${PROJECT_NAME} PRIVATE ${_SRCS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
-target_link_libraries(${PROJECT_NAME} PRIVATE absl::base)
+target_link_libraries(${PROJECT_NAME} PRIVATE absl::base absl::time)
 add_executable(CMakeAbseil::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Test
