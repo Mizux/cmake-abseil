@@ -11,9 +11,9 @@ This project should run on Linux, Mac and Windows.
 This CMake project is composed of one executable (FooApp) and one library (Foo)
 with the following dependencies:  
 ```
-Abseil: CCTZ
-Foo: Abseil
-FooApp: Abseil
+abseil-cpp:
+Foo: abseil-cpp
+FooApp: abseil-cpp
 ```
 
 ## Project directory layout
