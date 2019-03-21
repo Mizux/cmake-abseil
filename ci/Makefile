@@ -1,27 +1,57 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-$(info branch: $(BRANCH))
 SHA1 := $(shell git rev-parse --verify HEAD)
-$(info sha1: $(SHA1))
 
 # General commands
 .PHONY: help
+RESET=\e[0m
+BOLD=\e[1m
+
 help:
-	@echo "use NOCACHE=1 to \"docker build --no-cache\""
-	@echo "<distro>: alpine (latest), xenial (16.04 LTS), ubuntu (latest), all"
-	@echo "usage:"
-	@echo "make docker: generate docker devel images"
-	@echo "make configure: run cmake using the devel image container"
-	@echo "make build: execute the cmake target all using the devel image container"
-	@echo "make test: execute the cmake target test using the devel image container"
+	@echo -e "${BOLD}SYNOPSIS${RESET}"
+	@echo -e "\tmake <target> [NOCACHE=1]"
 	@echo
-	@echo "make install: execute the cmake target install using the devel image container, then create an install image with it"
-	@echo "make test_install: configure a sample project against it using the install image container"
-	@echo "make clean: execute the cmake target clean"
-	@echo "make distclean: execute clean and also remove all docker images"
-	@echo ""
-	@echo "note: Currently test are done on alpine and ubuntu, you can add \"_<distro>\"" \
- " at end of the previous targets to run only test on this distro (e.g make test_install_alpine)."
-	@echo "note: All generated code will be located in the cache/ folder, use distclean to remove it"
+	@echo -e "${BOLD}DESCRIPTION${RESET}"
+	@echo -e "\ttest build inside docker containers so we can test against various major distro setup."
+	@echo
+	@echo -e "${BOLD}MAKE TARGETS${RESET}"
+	@echo -e "\t${BOLD}help${RESET}: display this help and exit"
+	@echo
+	@echo -e "\t${BOLD}docker${RESET}: generate all docker devel images"
+	@echo -e "\t${BOLD}docker_<distro>${RESET}: generate docker devel images for the specified distro"
+	@echo
+	@echo -e "\t${BOLD}configure${RESET}: cmake 'configure' using all devel image containers"
+	@echo -e "\t${BOLD}configure_<distro>${RESET}: cmake 'configure' using the devel image container specified"
+	@echo
+	@echo -e "\t${BOLD}build${RESET}: cmake 'build' target ${BOLD}all${RESET} using all the devel image containers"
+	@echo -e "\t${BOLD}build_<distro>${RESET}: cmake 'build' target ${BOLD}all${RESET} using the devel image container specified"
+	@echo
+	@echo -e "\t${BOLD}test${RESET}: cmake 'build' target ${BOLD}test${RESET} using all devel image containers"
+	@echo -e "\t${BOLD}test_<distro>${RESET}: cmake 'build' target ${BOLD}test${RESET} using the devel image container specified"
+	@echo
+	@echo -e "\t${BOLD}install${RESET}: execute the cmake target ${BOLD}install${RESET} using all devel image container, then create an install image with it"
+	@echo -e "\t${BOLD}install_<distro>${RESET}: execute the cmake target ${BOLD}install${RESET} using the devel image container specified, then create an install image with it"
+	@echo
+	@echo -e "\t${BOLD}test_install${RESET}: configure, build, test a sample project against it using all ${BOLD}install${RESET} image containers"
+	@echo -e "\t${BOLD}test_install_<distro>${RESET}: configure, build, test a sample project against it using the ${BOLD}install${RESET} image container specified"
+	@echo
+	@echo -e "\t${BOLD}clean${RESET}: execute the cmake target ${BOLD}clean${RESET} for all devel image containers"
+	@echo -e "\t${BOLD}clean_<distro>${RESET}: execute the cmake target ${BOLD}clean${RESET} for the devel image container specified"
+	@echo
+	@echo -e "\t${BOLD}distclean${RESET}: execute ${BOLD}clean${RESET} and also remove all docker images"
+	@echo
+	@echo -e "\t${BOLD}<distro>${RESET}:"
+	@echo -e "\t\t${BOLD}alpine${RESET} (latest)"
+	@echo -e "\t\t${BOLD}ubuntu${RESET} (latest)"
+	@echo -e "\t\t${BOLD}xenial${RESET} (Ubuntu 16.04 LTS)"
+	@echo -e "\te.g. 'make test_ubuntu'"
+	@echo
+	@echo -e "\tNOCACHE=1: use 'docker build --no-cache' when building container"
+	@echo
+	@echo -e "${BOLD}NOTES${RESET}"
+	@echo -e "\tAll generated code will be located in the cache/ folder, use distclean to remove it"
+	@echo
+	@echo -e "branch: $(BRANCH)"
+	@echo -e "sha1: $(SHA1)"
 
 # Need to add cmd_distro to PHONY otherwise target are ignored since they do not
 # contain recipe (using FORCE do not work here)
