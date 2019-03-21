@@ -10,10 +10,39 @@ matrix:
 install: true
 
 script:
-  - cd ci
-  - make docker_${DISTRO}
-  - make configure_${DISTRO}
-  - make build_${DISTRO}
-  - make test_${DISTRO}
-  - make install_${DISTRO}
-  - make test_install_${DISTRO}
+  - |
+    cd ci
+    echo 'travis_fold:start:docker'
+    echo 'Build docker containers...'
+    make docker_${DISTRO}
+    echo 'travis_fold:end:docker'
+
+  - |
+    echo 'travis_fold:start:configure'
+    echo 'Configuring...'
+    make configure_${DISTRO}
+    echo 'travis_fold:end:configure'
+
+  - |
+    echo 'travis_fold:start:build'
+    echo 'Building...'
+    make build_${DISTRO}
+    echo 'travis_fold:end:build'
+
+  - |
+    echo 'travis_fold:start:test_build'
+    echo 'Testing build...'
+    make test_${DISTRO}
+    echo 'travis_fold:end:test_build'
+
+  - |
+    echo 'travis_fold:start:install'
+    echo 'Installing...'
+    make install_${DISTRO}
+    echo 'travis_fold:end:install'
+
+  - |
+    echo 'travis_fold:start:test_install'
+    echo 'Testing install...'
+    make test_install_${DISTRO}
+    echo 'travis_fold:end:test_install'
