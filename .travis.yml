@@ -10,33 +10,40 @@ matrix:
 install: true
 
 script:
-  - |
-    cd ci
-    echo 'travis_fold:start:docker'
-    make docker_${DISTRO}
-    echo 'travis_fold:end:docker'
+  - cd ci
+  - >
+    echo 'travis_fold:start:docker' &&
+    make docker_${DISTRO} &&
+    echo 'travis_fold:end:docker' ||
+    travis_terminate 1
 
-  - |
-    echo 'travis_fold:start:configure'
-    make configure_${DISTRO}
-    echo 'travis_fold:end:configure'
+  - >
+    echo 'travis_fold:start:configure' &&
+    make configure_${DISTRO} &&
+    echo 'travis_fold:end:configure' ||
+    travis_terminate 1
 
-  - |
-    echo 'travis_fold:start:build'
-    make build_${DISTRO}
-    echo 'travis_fold:end:build'
+  - >
+    echo 'travis_fold:start:build' &&
+    make build_${DISTRO} &&
+    echo 'travis_fold:end:build' ||
+    travis_terminate 1
 
-  - |
-    echo 'travis_fold:start:test_build'
-    make test_${DISTRO}
-    echo 'travis_fold:end:test_build'
+  - >
+    echo 'travis_fold:start:test_build' &&
+    make test_${DISTRO} &&
+    echo 'travis_fold:end:test_build' ||
+    travis_terminate 1
 
-  - |
-    echo 'travis_fold:start:install'
-    make install_${DISTRO}
-    echo 'travis_fold:end:install'
+  - >
+    echo 'travis_fold:start:install' &&
+    make install_${DISTRO} &&
+    echo 'travis_fold:end:install' ||
+    travis_terminate 1
 
-  - |
-    echo 'travis_fold:start:test_install'
-    make test_install_${DISTRO}
-    echo 'travis_fold:end:test_install'
+  - >
+    echo 'travis_fold:start:test_install' &&
+    make test_install_${DISTRO} &&
+    echo 'travis_fold:end:test_install' ||
+    travis_terminate 1
+
