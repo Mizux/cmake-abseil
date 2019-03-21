@@ -11,9 +11,9 @@ This project should run on Linux, Mac and Windows.
 This CMake project is composed of one executable (FooApp) and one library (Foo)
 with the following dependencies:  
 ```
-abseil-cpp:
-Foo: abseil-cpp
-FooApp: abseil-cpp
+absl:
+Foo: absl::strings
+FooApp: Foo, absl::strings
 ```
 
 ## Project directory layout
