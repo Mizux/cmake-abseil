@@ -66,12 +66,12 @@ else
 DOCKER_BUILD_CMD := docker build
 endif
 
-# Use host user id instead of root
+# Use host user id instead of default root:root
 UID := $(shell id -u)
 GID := $(shell id -g)
 DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}/..:/project -w /project --user ${UID}:${GID}
-
 #DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}:/project -w /project
+
 DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/sample:/project -w /project
 
 # $* stem
