@@ -13,9 +13,12 @@ include(GNUInstallDirs)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING
 	"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
 
-# building in static will require to export abseil also wich doesn't provide export rule...
-# cf https://gitlab.kitware.com/cmake/cmake/issues/17357
-option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
+if(UNIX)
+  option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
+else()
+	# only support for static build on Windows.
+  set(BUILD_SHARED_LIBS OFF)
+endif()
 
 # Build Dependencies
 add_subdirectory(cmake)
