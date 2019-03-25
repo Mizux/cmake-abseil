@@ -4,7 +4,7 @@ if(POLICY CMP0022)
 	cmake_policy(SET CMP0022 NEW)
 endif()
 
-project(CMakeAbseil VERSION 1.0 LANGUAGES NONE)
+project(CMakeAbseil VERSION 1.0)
 
 include(CTest)
 include(GNUInstallDirs)
