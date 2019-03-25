@@ -1,0 +1,7 @@
+FROM opensuse:latest
+
+RUN zypper up -y \
+&& zypper install -y gcc8-c++ cmake git \
+&& zypper clean -a
+
+ENV CC=gcc-8 CXX=g++-8

@@ -34,13 +34,19 @@ help:
 	@echo -e "\t${BOLD}test_install${RESET}: configure, build, test a sample project against it using all ${BOLD}install${RESET} image containers"
 	@echo -e "\t${BOLD}test_install_<distro>${RESET}: configure, build, test a sample project against it using the ${BOLD}install${RESET} image container specified"
 	@echo
-	@echo -e "\t${BOLD}clean${RESET}: execute the cmake target ${BOLD}clean${RESET} for all devel image containers"
-	@echo -e "\t${BOLD}clean_<distro>${RESET}: execute the cmake target ${BOLD}clean${RESET} for the devel image container specified"
+	@echo -e "\t${BOLD}clean${RESET}: Remove build directories and log files for all distros"
+	@echo -e "\t${BOLD}clean_<distro>${RESET}: Remove build directories and log files for the distro specified"
 	@echo
 	@echo -e "\t${BOLD}distclean${RESET}: execute ${BOLD}clean${RESET} and also remove all docker images"
+	@echo -e "\t${BOLD}distclean_<distro>${RESET}: execute ${BOLD}clean_<distro>${RESET} and also remove the docker images"
 	@echo
 	@echo -e "\t${BOLD}<distro>${RESET}:"
 	@echo -e "\t\t${BOLD}alpine${RESET} (latest)"
+	@echo -e "\t\t${BOLD}archlinux${RESET} (latest)"
+	@echo -e "\t\t${BOLD}centos${RESET} (latest)"
+	@echo -e "\t\t${BOLD}fedora${RESET} (latest)"
+	@echo -e "\t\t${BOLD}opensuse${RESET} (latest)"
+	@echo -e "\t\t${BOLD}debian${RESET} (latest)"
 	@echo -e "\t\t${BOLD}ubuntu${RESET} (latest)"
 	@echo -e "\t\t${BOLD}xenial${RESET} (Ubuntu 16.04 LTS)"
 	@echo -e "\te.g. 'make test_ubuntu'"
@@ -74,37 +80,35 @@ DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}/..:/project -w /project --user
 
 DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/sample:/project -w /project
 
+DISTROS = alpine archlinux centos fedora opensuse debian ubuntu xenial
+
 # $* stem
 # $< first prerequist
 # $@ target name
 
 # DOCKER
-.PHONY: docker docker_alpine docker_ubuntu docker_xenial
-docker: docker_alpine docker_ubuntu
-docker_alpine: cache/alpine/docker_devel.tar
-docker_ubuntu: cache/ubuntu/docker_devel.tar
-docker_xenial: cache/xenial/docker_devel.tar
+targets = $(addprefix docker_, $(DISTROS))
+.PHONY: docker $(targets)
+docker: $(target)
+$(targets): docker_%: cache/%/docker_devel.tar
 cache/%/docker_devel.tar: docker/%/Dockerfile
 	mkdir -p cache/$*
 	@docker image rm -f ${IMAGE}_$*:devel 2>/dev/null
+	@rm -f $@
 	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:devel -f $< docker/$*
 	docker save ${IMAGE}_$*:devel -o $@
 
 # DOCKER BASH (debug)
-.PHONY: bash_alpine bash_ubuntu bash_xenial
-bash_alpine: cache/alpine/docker_devel.tar
-	${DOCKER_DEVEL_CMD} ${IMAGE}_alpine:devel /bin/sh
-bash_ubuntu: cache/ubuntu/docker_devel.tar
-	${DOCKER_DEVEL_CMD} ${IMAGE}_ubuntu:devel /bin/bash
-bash_xenial: cache/xenial/docker_devel.tar
-	${DOCKER_DEVEL_CMD} ${IMAGE}_xenial:devel /bin/bash
+targets = $(addprefix bash_, $(DISTROS))
+.PHONY: $(targets)
+$(targets): bash_%: cache/%/docker_devel.tar
+	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh
 
 # CONFIGURE
-.PHONY: configure configure_alpine configure_ubuntu configure_xenial
-configure: configure_alpine configure_ubuntu configure_xenial
-configure_alpine: cache/alpine/configure.log
-configure_ubuntu: cache/ubuntu/configure.log
-configure_xenial: cache/xenial/configure.log
+targets = $(addprefix configure_, $(DISTROS))
+.PHONY: configure $(targets)
+configure: $(target)
+$(targets): configure_%: cache/%/configure.log
 cache/%/configure.log: cache/%/docker_devel.tar \
 	../CMakeLists.txt ../*/CMakeLists.txt \
 	../cmake/*.CMakeLists.txt ../cmake/*Config.cmake.in
@@ -114,59 +118,51 @@ cache/%/configure.log: cache/%/docker_devel.tar \
 	@date > $@
 
 # BUILD
-.PHONY: build build_alpine build_ubuntu build_xenial
-build: build_alpine build_ubuntu build_xenial
-build_alpine: cache/alpine/build.log
-build_ubuntu: cache/ubuntu/build.log
-build_xenial: cache/xenial/build.log
+targets = $(addprefix build_, $(DISTROS))
+.PHONY: build $(targets)
+build: $(target)
+$(targets): build_%: cache/%/build.log
 cache/%/build.log: cache/%/configure.log ../Foo ../FooApp
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake --build ci/cache/$*/build --target all"
 	@date > $@
 
 # TEST
-.PHONY: test test_alpine test_ubuntu test_xenial
-test: test_alpine test_ubuntu test_xenial
-test_alpine: cache/alpine/test.log
-test_ubuntu: cache/ubuntu/test.log
-test_xenial: cache/xenial/test.log
+targets = $(addprefix test_, $(DISTROS))
+.PHONY: test $(targets)
+test: $(target)
+$(targets): test_%: cache/%/test.log
 cache/%/test.log: cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake --build ci/cache/$*/build --target test -- CTEST_OUTPUT_ON_FAILURE=1"
 	@date > $@
 
 # INSTALL
-.PHONY: install install_alpine install_ubuntu install_xenial
-install: install_alpine install_ubuntu install_xenial
-install_alpine: cache/alpine/install.log
-install_ubuntu: cache/ubuntu/install.log
-install_xenial: cache/xenial/install.log
+targets = $(addprefix install_, $(DISTROS))
+.PHONY: install $(targets)
+install: $(target)
+$(targets): install_%: cache/%/install.log
 cache/%/install.log: docker/%/InstallDockerfile cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake --build ci/cache/$*/build --target install -- DESTDIR=../install"
 	@docker image rm -f ${IMAGE}_$*:install 2>/dev/null
+	@rm -f cache/$*/docker_install.tar
 	${DOCKER_BUILD_CMD} -t ${IMAGE}_$*:install -f $< cache/$*
 	docker save ${IMAGE}_$*:install -o cache/$*/docker_install.tar
 	@date > $@
 
-# DOCKER BASH INSTALL
-.PHONY: bash_install_alpine bash_install_ubuntu bash_install_xenial
-bash_install_alpine: cache/alpine/install.log
-	@docker load -i cache/alpine/docker_install.tar
-	${DOCKER_INSTALL_CMD} ${IMAGE}_alpine:install /bin/sh
-bash_install_ubuntu: cache/ubuntu/install.log
-	@docker load -i cache/ubuntu/docker_install.tar
-	${DOCKER_INSTALL_CMD} ${IMAGE}_ubuntu:install /bin/bash
-bash_install_xenial: cache/xenial/install.log
-	@docker load -i cache/xenial/docker_install.tar
-	${DOCKER_INSTALL_CMD} ${IMAGE}_xenial:install /bin/bash
+# DOCKER BASH INSTALL (debug)
+targets = $(addprefix bash_install_, $(DISTROS))
+.PHONY: $(targets)
+$(targets): bash_install_%: cache/%/install.log
+	@docker load -i cache/$*/docker_install.tar
+	${DOCKER_INSTALL_CMD} ${IMAGE}_$*:install /bin/sh
 
 # TEST INSTALL of ProjectConfigs.cmake
-.PHONY: test_install test_install_alpine test_install_ubuntu test_install_xenial
-test_install: test_install_alpine test_install_ubuntu test_install_xenial
-test_install_alpine: cache/alpine/test_install.log
-test_install_ubuntu: cache/ubuntu/test_install.log
-test_install_xenial: cache/xenial/test_install.log
+targets = $(addprefix test_install_, $(DISTROS))
+.PHONY: test_install $(targets)
+test_install: $(target)
+$(targets): test_install_%: cache/%/test_install.log
 cache/%/test_install.log: cache/%/install.log sample
 	@docker load -i cache/$*/docker_install.tar
 	${DOCKER_INSTALL_CMD} ${IMAGE}_$*:install /bin/sh -c \
@@ -177,31 +173,26 @@ cache/%/test_install.log: cache/%/install.log sample
 	@date > $@
 
 # CLEAN
-.PHONY: clean clean_alpine clean_ubuntu
-clean: clean_alpine clean_ubuntu
-clean_alpine: clean-alpine
-clean_ubuntu: clean-ubuntu
-clean-%:: cache/%/docker_devel.tar
-	@docker load -i $<
-	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"cmake --build ci/cache/$*/build --target clean"
-	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"rm -rf ci/cache/$*/install"
-	@rm -f cache/$*/test.log
-	@rm -f cache/$*/build.log
-	@rm -f cache/$*/configure.log
-	@rm -f cache/$*/install.log
-	@rm -f cache/$*/test_install.log
+targets = $(addprefix clean_, $(DISTROS))
+.PHONY: clean $(targets)
+clean: $(targets)
+$(targets): clean_%:
+	-rm -f cache/$*/test_install.log
+	-rm -f cache/$*/install.log
+	-rm -f cache/$*/test.log
+	-rm -f cache/$*/build.log
+	-rm -f cache/$*/configure.log
+	-rm -rf cache/$*/build
 
 # DISTCLEAN
-.PHONY: distclean distclean_alpine distclean_ubuntu
-distclean: distclean_alpine distclean_ubuntu
+targets = $(addprefix distclean_, $(DISTROS))
+.PHONY: distclean $(targets)
+distclean: $(targets)
 	docker image prune -f
 	rmdir cache
-distclean_alpine: distclean-alpine
-distclean_ubuntu: distclean-ubuntu
-distclean-%::
-	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
-		"rm -rf ci/cache/$*"
-	docker image rm -f ${IMAGE}_$*:devel 2>/dev/null
-	docker image rm -f ${IMAGE}_$*:install 2>/dev/null
+$(targets): distclean_%: clean_%
+	-docker image rm -f ${IMAGE}_$*:install 2>/dev/null
+	-rm -f cache/$*/docker_install.tar
+	-docker image rm -f ${IMAGE}_$*:devel 2>/dev/null
+	-rm -f cache/$*/docker_devel.tar
+	-rmdir cache/$*

@@ -4,8 +4,13 @@ dist: xenial
 matrix:
   include:
     - env: DISTRO=alpine
+    - env: DISTRO=archlinux
+    - env: DISTRO=centos
+    - env: DISTRO=fedora
+    - env: DISTRO=debian
     - env: DISTRO=ubuntu
     - env: DISTRO=xenial
+    - env: DISTRO=opensuse
 
 install: true
 
