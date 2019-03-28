@@ -1,3 +1,4 @@
+PROJECT := Abseil
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 SHA1 := $(shell git rev-parse --verify HEAD)
 
@@ -64,7 +65,7 @@ help:
 .PHONY: all
 all: build
 
-IMAGE := cmake_abseil
+IMAGE := cmake_$(PROJECT)
 
 ifdef NOCACHE
 DOCKER_BUILD_CMD := docker build --no-cache
