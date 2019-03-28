@@ -89,7 +89,7 @@ DISTROS = alpine archlinux centos fedora opensuse debian ubuntu xenial
 # DOCKER
 targets = $(addprefix docker_, $(DISTROS))
 .PHONY: docker $(targets)
-docker: $(target)
+docker: $(targets)
 $(targets): docker_%: cache/%/docker_devel.tar
 cache/%/docker_devel.tar: docker/%/Dockerfile
 	mkdir -p cache/$*
@@ -107,7 +107,7 @@ $(targets): bash_%: cache/%/docker_devel.tar
 # CONFIGURE
 targets = $(addprefix configure_, $(DISTROS))
 .PHONY: configure $(targets)
-configure: $(target)
+configure: $(targets)
 $(targets): configure_%: cache/%/configure.log
 cache/%/configure.log: cache/%/docker_devel.tar \
 	../CMakeLists.txt ../*/CMakeLists.txt \
@@ -120,7 +120,7 @@ cache/%/configure.log: cache/%/docker_devel.tar \
 # BUILD
 targets = $(addprefix build_, $(DISTROS))
 .PHONY: build $(targets)
-build: $(target)
+build: $(targets)
 $(targets): build_%: cache/%/build.log
 cache/%/build.log: cache/%/configure.log ../Foo ../FooApp
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
@@ -130,7 +130,7 @@ cache/%/build.log: cache/%/configure.log ../Foo ../FooApp
 # TEST
 targets = $(addprefix test_, $(DISTROS))
 .PHONY: test $(targets)
-test: $(target)
+test: $(targets)
 $(targets): test_%: cache/%/test.log
 cache/%/test.log: cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
@@ -140,7 +140,7 @@ cache/%/test.log: cache/%/build.log
 # INSTALL
 targets = $(addprefix install_, $(DISTROS))
 .PHONY: install $(targets)
-install: $(target)
+install: $(targets)
 $(targets): install_%: cache/%/install.log
 cache/%/install.log: docker/%/InstallDockerfile cache/%/build.log
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
@@ -161,7 +161,7 @@ $(targets): bash_install_%: cache/%/install.log
 # TEST INSTALL of ProjectConfigs.cmake
 targets = $(addprefix test_install_, $(DISTROS))
 .PHONY: test_install $(targets)
-test_install: $(target)
+test_install: $(targets)
 $(targets): test_install_%: cache/%/test_install.log
 cache/%/test_install.log: cache/%/install.log sample
 	@docker load -i cache/$*/docker_install.tar
