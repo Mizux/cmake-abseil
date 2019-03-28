@@ -1,4 +1,4 @@
-PROJECT := Abseil
+PROJECT := abseil
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 SHA1 := $(shell git rev-parse --verify HEAD)
 
@@ -65,7 +65,16 @@ help:
 .PHONY: all
 all: build
 
-IMAGE := cmake_$(PROJECT)
+# Delete all implicit rules to speed up makefile
+.SUFFIXES:
+# Remove some rules from gmake that .SUFFIXES does not remove.
+SUFFIXES =
+# Keep all intermediate files
+# ToDo: try to remove it later
+.SECONDARY:
+
+# Docker image name
+IMAGE := cmake_${PROJECT}
 
 ifdef NOCACHE
 DOCKER_BUILD_CMD := docker build --no-cache
