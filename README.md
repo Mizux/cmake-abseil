@@ -50,12 +50,12 @@ docker containers to test.
 
 For example to test the CMake project on ubuntu:
 ```sh
-make -f ci/Makefile test_install_ubuntu
+make --directory=ci test_ubuntu
 ```
 
 note: to get help you can use
 ```sh
-make -f ci/Makefile help
+make --directory=ci
 ```
 
 # Known issues
