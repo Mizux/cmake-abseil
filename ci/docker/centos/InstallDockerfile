@@ -17,4 +17,12 @@ http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-1.noar
 && yum clean all \
 && rm -rf /var/cache/yum
 
+RUN cd /tmp \
+&& git clone https://github.com/abseil/abseil-cpp.git \
+&& cd abseil-cpp \
+&& cmake -H. -Bbuild \
+&& cmake --build build --target install \
+&& cd .. \
+&& rm -rf abseil-cpp
+
 COPY install /

@@ -3,4 +3,12 @@ LABEL maintainer="corentinl@google.com"
 
 RUN pacman -Syu --noconfirm base-devel git cmake
 
+RUN cd /tmp \
+&& git clone https://github.com/abseil/abseil-cpp.git \
+&& cd abseil-cpp \
+&& cmake -H. -Bbuild \
+&& cmake --build build --target install \
+&& cd .. \
+&& rm -rf abseil-cpp
+
 COPY install /

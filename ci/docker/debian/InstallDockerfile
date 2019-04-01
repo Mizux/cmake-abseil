@@ -2,8 +2,16 @@ FROM debian:latest
 LABEL maintainer="corentinl@google.com"
 
 RUN apt-get update -q && \
-apt-get install -yq build-essential cmake && \
+apt-get install -yq git build-essential cmake && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN cd /tmp \
+&& git clone https://github.com/abseil/abseil-cpp.git \
+&& cd abseil-cpp \
+&& cmake -H. -Bbuild \
+&& cmake --build build --target install \
+&& cd .. \
+&& rm -rf abseil-cpp
 
 COPY install /
