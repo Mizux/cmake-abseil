@@ -1,5 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/fxxmf49bkboftmg5/branch/master?svg=true)](https://ci.appveyor.com/project/Mizux/cmake-abseil/branch/master)
-
 # Introduction
 This is an integration test of Abseil in a Modern [CMake](https://cmake.org/) C++ Project using
  [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) module.
