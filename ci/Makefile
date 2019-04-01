@@ -122,6 +122,7 @@ $(targets): configure_%: cache/%/configure.log
 cache/%/configure.log: cache/%/docker_devel.tar \
 	../CMakeLists.txt ../*/CMakeLists.txt \
 	../cmake/*.CMakeLists.txt ../cmake/*Config.cmake.in
+	@rm -rf cache/$*/build
 	@docker load -i $<
 	${DOCKER_DEVEL_CMD} ${IMAGE}_$*:devel /bin/sh -c \
 		"cmake -version && cmake -H. -Bci/cache/$*/build"
