@@ -20,8 +20,14 @@ else()
   set(BUILD_SHARED_LIBS OFF)
 endif()
 
-# Build Dependencies
-add_subdirectory(cmake)
+find_package(absl)
+# Build Dependencies if not found in the system
+if (NOT TARGET absl::base)
+  add_subdirectory(cmake)
+  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/dependencies)
+  message(STATUS "absl::base currently not loaded")
+  find_package(absl REQUIRED)
+endif()
 
 add_subdirectory(Foo)
 add_subdirectory(FooApp)
