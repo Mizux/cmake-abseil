@@ -1,4 +1,0 @@
-FROM archlinux/base
-LABEL maintainer="corentinl@google.com"
-
-RUN pacman -Syu --noconfirm base-devel git cmake
