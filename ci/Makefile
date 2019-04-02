@@ -1,11 +1,11 @@
-PROJECT := abseil
+PROJECT := cmake_abseil
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 SHA1 := $(shell git rev-parse --verify HEAD)
 
 # General commands
 .PHONY: help
-RESET=\e[0m
 BOLD=\e[1m
+RESET=\e[0m
 
 help:
 	@echo -e "${BOLD}SYNOPSIS${RESET}"
@@ -15,31 +15,31 @@ help:
 	@echo -e "\ttest build inside docker containers so we can test against various major distro setup."
 	@echo
 	@echo -e "${BOLD}MAKE TARGETS${RESET}"
-	@echo -e "\t${BOLD}help${RESET}: display this help and exit"
+	@echo -e "\t${BOLD}help${RESET}: display this help and exit."
 	@echo
-	@echo -e "\t${BOLD}docker${RESET}: generate all docker devel images"
-	@echo -e "\t${BOLD}docker_<distro>${RESET}: generate docker devel images for the specified distro"
+	@echo -e "\t${BOLD}docker${RESET}: generate all docker devel images."
+	@echo -e "\t${BOLD}docker_<distro>${RESET}: generate docker devel image for the specified distro."
 	@echo
-	@echo -e "\t${BOLD}configure${RESET}: cmake 'configure' using all devel image containers"
-	@echo -e "\t${BOLD}configure_<distro>${RESET}: cmake 'configure' using the devel image container specified"
+	@echo -e "\t${BOLD}configure${RESET}: cmake 'configure' using all devel image containers."
+	@echo -e "\t${BOLD}configure_<distro>${RESET}: cmake 'configure' using the devel image container specified."
 	@echo
-	@echo -e "\t${BOLD}build${RESET}: cmake 'build' target ${BOLD}all${RESET} using all the devel image containers"
-	@echo -e "\t${BOLD}build_<distro>${RESET}: cmake 'build' target ${BOLD}all${RESET} using the devel image container specified"
+	@echo -e "\t${BOLD}build${RESET}: cmake 'build' target ${BOLD}all${RESET} using all the devel image containers."
+	@echo -e "\t${BOLD}build_<distro>${RESET}: cmake 'build' target ${BOLD}all${RESET} using the devel image container specified."
 	@echo
-	@echo -e "\t${BOLD}test${RESET}: cmake 'build' target ${BOLD}test${RESET} using all devel image containers"
-	@echo -e "\t${BOLD}test_<distro>${RESET}: cmake 'build' target ${BOLD}test${RESET} using the devel image container specified"
+	@echo -e "\t${BOLD}test${RESET}: cmake 'build' target ${BOLD}test${RESET} using all devel image containers."
+	@echo -e "\t${BOLD}test_<distro>${RESET}: cmake 'build' target ${BOLD}test${RESET} using the devel image container specified."
 	@echo
-	@echo -e "\t${BOLD}install${RESET}: execute the cmake target ${BOLD}install${RESET} using all devel image container, then create an install image with it"
-	@echo -e "\t${BOLD}install_<distro>${RESET}: execute the cmake target ${BOLD}install${RESET} using the devel image container specified, then create an install image with it"
+	@echo -e "\t${BOLD}install${RESET}: execute the cmake target ${BOLD}install${RESET} using all devel image container, then create an install image with it."
+	@echo -e "\t${BOLD}install_<distro>${RESET}: execute the cmake target ${BOLD}install${RESET} using the devel image container specified, then create an install image with it."
 	@echo
-	@echo -e "\t${BOLD}test_install${RESET}: configure, build, test a sample project against it using all ${BOLD}install${RESET} image containers"
-	@echo -e "\t${BOLD}test_install_<distro>${RESET}: configure, build, test a sample project against it using the ${BOLD}install${RESET} image container specified"
+	@echo -e "\t${BOLD}test_install${RESET}: configure, build, install then test a sample project against it using all ${BOLD}install${RESET} image containers."
+	@echo -e "\t${BOLD}test_install_<distro>${RESET}: configure, build, install then test a sample project against it using the ${BOLD}install${RESET} image container specified."
 	@echo
-	@echo -e "\t${BOLD}clean${RESET}: Remove build directories and log files for all distros"
-	@echo -e "\t${BOLD}clean_<distro>${RESET}: Remove build directories and log files for the distro specified"
+	@echo -e "\t${BOLD}clean${RESET}: Remove build directories and log files for all distros."
+	@echo -e "\t${BOLD}clean_<distro>${RESET}: Remove build directories and log files for the distro specified."
 	@echo
-	@echo -e "\t${BOLD}distclean${RESET}: execute ${BOLD}clean${RESET} and also remove all docker images"
-	@echo -e "\t${BOLD}distclean_<distro>${RESET}: execute ${BOLD}clean_<distro>${RESET} and also remove the docker images"
+	@echo -e "\t${BOLD}distclean${RESET}: execute ${BOLD}clean${RESET} and also remove all docker images."
+	@echo -e "\t${BOLD}distclean_<distro>${RESET}: execute ${BOLD}clean_<distro>${RESET} and also remove the docker images."
 	@echo
 	@echo -e "\t${BOLD}<distro>${RESET}:"
 	@echo -e "\t\t${BOLD}alpine${RESET} (latest)"
@@ -52,10 +52,10 @@ help:
 	@echo -e "\t\t${BOLD}xenial${RESET} (Ubuntu 16.04 LTS)"
 	@echo -e "\te.g. 'make test_ubuntu'"
 	@echo
-	@echo -e "\tNOCACHE=1: use 'docker build --no-cache' when building container"
+	@echo -e "\t${BOLD}NOCACHE=1${RESET}: use 'docker build --no-cache' when building container (default use cache)."
 	@echo
 	@echo -e "${BOLD}NOTES${RESET}"
-	@echo -e "\tAll generated code will be located in the cache/ folder, use distclean to remove it"
+	@echo -e "\tAll generated code will be located in the cache/ folder, use distclean to remove it."
 	@echo
 	@echo -e "branch: $(BRANCH)"
 	@echo -e "sha1: $(SHA1)"
@@ -73,8 +73,8 @@ SUFFIXES =
 # ToDo: try to remove it later
 .SECONDARY:
 
-# Docker image name
-IMAGE := cmake_${PROJECT}
+# Docker image name prefix.
+IMAGE := ${PROJECT}
 
 ifdef NOCACHE
 DOCKER_BUILD_CMD := docker build --no-cache
@@ -90,6 +90,7 @@ DOCKER_DEVEL_CMD := docker run --rm -it -v ${PWD}/..:/project -w /project --user
 
 DOCKER_INSTALL_CMD := docker run --rm -it -v ${PWD}/sample:/project -w /project
 
+# Currently supported distro
 DISTROS = alpine archlinux centos fedora opensuse debian ubuntu xenial
 
 # $* stem
