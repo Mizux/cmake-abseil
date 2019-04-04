@@ -31,6 +31,8 @@ at the branch [`install`](https://github.com/Mizux/cmake-abseil/tree/install)
 
 # Known issues
 
+On windows, abseil-cpp link flags `/ignore:4221` break the integration see https://github.com/abseil/abseil-cpp/issues/293
+
 # Contributing
 The [CONTRIBUTING.md](./CONTRIBUTING.md) file contains instructions on how to
 file the Contributor License Agreement before sending any pull requests (PRs).
