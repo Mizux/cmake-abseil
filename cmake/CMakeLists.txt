@@ -12,14 +12,14 @@ configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/abseil.CMakeLists.txt
 	${CMAKE_BINARY_DIR}/abseil-cpp/CMakeLists.txt)
 
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+execute_process(COMMAND ${CMAKE_COMMAND} -H. -Bproject_build -G "${CMAKE_GENERATOR}"
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/abseil-cpp)
 if(result)
   message(FATAL_ERROR "CMake step for abseil failed: ${result}")
 endif()
 
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
+execute_process(COMMAND ${CMAKE_COMMAND} --build project_build
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/abseil-cpp)
 if(result)
