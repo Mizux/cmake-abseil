@@ -1,10 +1,12 @@
+# Strategy 1: `add_subdirectory()`
+
 # Introduction
 This is an integration test of Abseil in a Modern [CMake](https://cmake.org/) C++ Project using
  [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) module.
 
-We try to integrate abseil-cpp as subdirectory or by installing it first.
+We try to integrate abseil-cpp as a project subdirectory.
 
-This project should run on Linux, Mac and Windows.
+This project support Linux Distro, MacOS and Windows (VS2015/2017).
 
 # CMake Dependencies Tree
 This CMake project is composed of one executable (FooApp) and one library (Foo)
