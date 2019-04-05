@@ -22,12 +22,16 @@ FooApp: Foo, absl::strings
 To see the integration of abseil-cpp as `add_subdirectory()` please take a look
 at the branch [`add_subdirectory`](https://github.com/Mizux/cmake-abseil/tree/add_subdirectory)
 
+**spoiler: This is not working (as intended)**
+
 # Strategy 2: `find_package(absl)`
 [![Build Status](https://travis-ci.org/Mizux/cmake-abseil.svg?branch=install)](https://travis-ci.org/Mizux/cmake-abseil)
 [![Build status](https://ci.appveyor.com/api/projects/status/fxxmf49bkboftmg5/branch/install?svg=true)](https://ci.appveyor.com/project/Mizux/cmake-abseil/branch/install)
 
 To see the integration of abseil-cpp using `find_package()` (and local staging install) please take a look
 at the branch [`install`](https://github.com/Mizux/cmake-abseil/tree/install)
+
+**spoiler: This is the way to go**
 
 # Known issues
 
