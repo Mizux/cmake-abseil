@@ -10,6 +10,7 @@ This is an integration test of Abseil in a Modern [CMake](https://cmake.org/) C+
 We try to integrate abseil-cpp as a project subdirectory.
 
 This project support Linux Distro, MacOS and Windows (VS2015/2017).
+**spoiler: This is not working (as intended)**
 
 ## CMake Dependencies Tree
 This CMake project is composed of one executable (FooApp) and one library (Foo)
@@ -43,6 +44,13 @@ cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON
 cmake --build build
 ```
 
+## Known issues
+* Export set do a closure on **non** `IMPORTED` targets. So it won't work.
+You should see this type of error.
+```sh
+CMake Error: install(EXPORT "CMakeAbseilTargets" ...) includes target "Foo" which requires target "absl::string" that is not in the export set.
+```
+
 ## CI: Makefile/Docker testing
 To test CMake Install rules and build, there is a Makefile in ci folder using
 docker containers to test.
@@ -61,9 +69,6 @@ note: to get help you can use
 ```sh
 make --directory=ci
 ```
-
-## Known issues
-* Export set do a closure on **non** `IMPORTED` targets. So it won't work.
 
 ## License
 Apache 2. See the LICENSE file for details.
