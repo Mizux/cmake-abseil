@@ -2,7 +2,7 @@
 This is an integration test of Abseil in a Modern [CMake](https://cmake.org/) C++ Project using
  [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) module.
 
-We try to integrate abseil-cpp using `add_subdirectory()` **or** by installing it first then using `find_package()`.
+We try to integrate abseil-cpp using `add_subdirectory(abseil-cpp)` **or** by installing it first (in astaging area) then using `find_package(absl)`.
 
 This project should run on Linux, Mac and Windows.
 
