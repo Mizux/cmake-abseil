@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Mizux/cmake-abseil.svg?branch=add_subdirectory)](https://travis-ci.org/Mizux/cmake-abseil)
 [![Build status](https://ci.appveyor.com/api/projects/status/fxxmf49bkboftmg5/branch/add_subdirectory?svg=true)](https://ci.appveyor.com/project/Mizux/cmake-abseil/branch/add_subdirectory)
 
-# Strategy 1: `add_subdirectory()`
+# Strategy 1: `add_subdirectory(abseil-cpp)`
 
 ## Introduction
 This is an integration test of Abseil in a Modern [CMake](https://cmake.org/) C++ Project using
