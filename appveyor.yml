@@ -19,7 +19,7 @@ before_build:
   - git config --global user.email "ci@appveyor.com"
   - git config --global user.name "CI"
   - cmake --version
-  - cmake -H. -Bbuild --config Release -G "%CMAKE_GENERATOR%"
+  - cmake -H. -Bbuild -G "%CMAKE_GENERATOR%"
 
 build_script:
   - cmake --build build --config Release --target ALL_BUILD -- %MSBUILD_FLAGS%
