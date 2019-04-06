@@ -19,7 +19,7 @@ if(result)
   message(FATAL_ERROR "CMake step for abseil failed: ${result}")
 endif()
 
-execute_process(COMMAND ${CMAKE_COMMAND} --build project_build
+execute_process(COMMAND ${CMAKE_COMMAND} --config ${CMAKE_BUILD_TYPE} --build project_build
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/abseil-cpp)
 if(result)
