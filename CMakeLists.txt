@@ -10,8 +10,12 @@ include(CTest)
 include(GNUInstallDirs)
 
 # Set default build type to Release if empty.
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-	"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+	  "Choose the type of build, options are: Debug Release RelWithDebInfo
+    MinSizeRel." FORCE)
+endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 if(UNIX)
   option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
