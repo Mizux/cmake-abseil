@@ -1,4 +1,4 @@
-| Linux/OSX                                       | Windows                                             |
+| Linux/macOS                                     | Windows                                             |
 |-------------------------------------------------|-----------------------------------------------------|
 | [![Build Status][travis_status]][travis_builds] | [![Build Status][appveyor_status]][appveyor_builds] |
 
