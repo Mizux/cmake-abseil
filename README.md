@@ -1,5 +1,12 @@
-[![Build Status](https://travis-ci.org/Mizux/cmake-abseil.svg?branch=install)](https://travis-ci.org/Mizux/cmake-abseil)
-[![Build status](https://ci.appveyor.com/api/projects/status/fxxmf49bkboftmg5/branch/install?svg=true)](https://ci.appveyor.com/project/Mizux/cmake-abseil/branch/install)
+| Linux/OSX                                       | Windows                                             |
+|-------------------------------------------------|-----------------------------------------------------|
+| [![Build Status][travis_status]][travis_builds] | [![Build Status][appveyor_status]][appveyor_builds] |
+
+[travis_status]: https://travis-ci.org/Mizux/cmake-abseil.svg?branch=install
+[travis_builds]: https://travis-ci.org/Mizux/cmake-abseil
+
+[appveyor_status]: https://ci.appveyor.com/api/projects/status/fxxmf49bkboftmg5/branch/install?svg=true
+[appveyor_builds]: https://ci.appveyor.com/project/Mizux/cmake-abseil/branch/install
 
 # Strategy 2: `find_package(absl)`
 
